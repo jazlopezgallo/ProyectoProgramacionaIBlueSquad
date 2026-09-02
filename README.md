@@ -1,149 +1,121 @@
-# Proyecto Programación I - BlueSquad
+# Portafolio de entrega
+
+## Programación I
+
+**Carrera:** Licenciatura en Análisis  
+**Institución:** UADE  
+**Año:** Primer año  
+**Materia:** Programación I  
+**Clase:** 4 - Git, GitHub y cadenas de caracteres
+
+### Grupo: BlueSquad
+
+**GitHub:** [ProyectoProgramacionaIBlueSquad](https://github.com/jazlopezgallo/ProyectoProgramacionaIBlueSquad)
+
+**Integrantes:** Agustina Mendoza, Jazmin Lopez Gallo y Mauricio Abel Cuellar
 
 ## Descripción
 
-Este repositorio contiene las actividades prácticas del orientador de clase **Git, GitHub y cadenas de caracteres**, correspondiente a la materia **Programación I / Algoritmos y Estructuras I**.
+Este repositorio contiene los ejercicios y actividades prácticas realizados
+por el grupo BlueSquad durante la materia Programación I. El portfolio se
+completará progresivamente con los trabajos de los orientadores 1, 2, 3 y 4.
 
-El trabajo integra:
+Los ejercicios están desarrollados principalmente en Python y se organizan por
+orientador para facilitar la lectura, la ejecución y la revisión de cada
+actividad.
 
-- Fundamentos de Git y GitHub.
-- Cadenas de caracteres en Python.
-- Operadores, funciones y métodos de cadenas.
-- Conversión de tipos y formateo de datos.
-- Organización de un programa mediante funciones.
-- Trabajo colaborativo y registro de cambios.
+## Organización del portfolio
 
-## Estructura del proyecto
+### Orientador 1
+
+En esta sección se incorporarán los primeros ejercicios de programación. Se
+organizarán por actividad y permitirán consultar los conceptos iniciales, los
+algoritmos y las soluciones trabajadas en clase.
+
+**Estado:** pendiente de incorporar.
+
+### Orientador 2
+
+En esta sección se incorporarán los ejercicios correspondientes al segundo
+orientador, manteniendo la separación por actividad y archivo fuente.
+
+**Estado:** pendiente de incorporar.
+
+### Orientador 3
+
+Esta sección reúne ejercicios de cadenas de caracteres, funciones, métodos y
+procesamiento de texto. Cada archivo contiene la resolución de una actividad y,
+cuando corresponde, sus casos de prueba.
+
+**Ubicación:** [`codigo/orientadorTres`](codigo/orientadorTres)
+
+### Orientador 4
+
+Esta sección trabaja con tuplas, tuplas anidadas, operadores, funciones,
+métodos, matrices y un desafío integrador de catálogo de productos.
+
+La segmentación de actividades es la siguiente:
+
+- **Actividad 3:** creación de tuplas y reconocimiento de tuplas de uno o más elementos.
+- **Actividad 4:** acceso por índice, recorrido y rebanadas de tuplas.
+- **Actividad 5:** operadores, funciones y métodos como `len()`, `max()`, `min()`, `sum()`, `in`, `not in`, `count()` e `index()`.
+- **Actividad 6:** empaquetado y desempaquetado de valores.
+- **Actividad 7:** tuplas anidadas con datos de alumnos y fechas.
+- **Actividad 8:** integración de códigos almacenados en una tupla con una matriz de ventas semanales.
+- **Actividad 9:** catálogo de productos con registros representados mediante tuplas y un catálogo almacenado en una lista.
+- **Actividad 10:** verificación y análisis mediante casos de prueba.
+
+**Ubicación:** [`codigo/orientadorCuatro`](codigo/orientadorCuatro)
+
+## Estructura esperada
+
+A medida que se incorporen los trabajos faltantes, el repositorio tendrá una
+organización similar a la siguiente:
 
 ```text
-ProyectoProgramacionaIBlueSquad/
-├── cadenaDeCaracteres.py
-├── funcionesMetodos.py
-├── perfil_equipo.py
-├── principal.py
-├── casos_prueba_perfil_equipo.md
-└── README.md
+codigo/
+├── orientadorUno/
+├── orientadorDos/
+├── orientadorTres/
+└── orientadorCuatro/
 ```
 
-## Relación entre la actividad y los archivos
+Cada carpeta puede incluir los archivos `.py`, los casos de prueba y un README
+específico con la explicación de sus actividades.
 
-### `principal.py`
+## Contenido del portfolio
 
-Contiene el primer programa del Proyecto Integrador:
+El documento grupal incluirá:
 
-```python
-print("Primer programa del Proyecto Integrador")
+- Código fuente de todos los ejercicios.
+- Capturas de ejecución.
+- Tablas de casos de prueba.
+- Explicación de las diferencias entre listas y tuplas.
+- Justificación del uso de tuplas para los registros y de listas para el catálogo.
+- Reflexión individual de cada integrante sobre cuándo elegir una tupla en lugar de una lista.
+
+## Listas y tuplas
+
+Las listas son estructuras mutables: permiten agregar, eliminar y modificar
+elementos. Las tuplas son estructuras inmutables: una vez creadas, sus
+posiciones no pueden modificarse.
+
+En el desafío del orientador 4, cada registro se representa mediante una tupla
+porque tiene una estructura fija formada por código, descripción y precio. El
+catálogo completo se representa mediante una lista porque puede crecer durante
+la carga y permite agregar nuevos registros.
+
+## Ejecución
+
+Para ejecutar un ejercicio, ingresar a la carpeta correspondiente y utilizar:
+
+```text
+python nombre_del_archivo.py
 ```
 
-Este archivo representa el inicio del proyecto y la primera estructura creada por el equipo.
+Por ejemplo, para ejecutar las pruebas del catálogo del orientador 4:
 
-### `cadenaDeCaracteres.py`
-
-Desarrolla el punto 5 del PDF, **Cadenas de caracteres**. Incluye:
-
-- Acceso al primer y al último carácter.
-- Slicing para obtener `Programacion`.
-- Inversión de una cadena.
-- Verificación de pertenencia con el operador `in`.
-- Demostración de la inmutabilidad de las cadenas.
-
-La instrucción `texto[0] = "p"` produce un `TypeError`, porque una cadena no permite reemplazar directamente uno de sus caracteres. El archivo deja esta operación como demostración del error solicitado en la actividad.
-
-### `funcionesMetodos.py`
-
-Desarrolla los puntos 6 y 7 del PDF.
-
-En la primera parte se prueban métodos de cadenas:
-
-- Transformación: `upper()`, `lower()`, `title()`, `capitalize()` y `replace()`.
-- Consulta: `count()`, `find()` y `len()`.
-- Validación: `isalpha()`, `isdigit()` e `isalnum()`.
-
-Los métodos de transformación retornan una nueva cadena y no modifican el texto original. Los métodos de validación, en cambio, devuelven un valor booleano (`True` o `False`).
-
-En la segunda parte se solicita el nombre de un producto, su precio unitario y la cantidad. El precio se convierte a `float`, la cantidad a `int` y luego se calcula el importe total. El resultado se muestra mediante:
-
-1. Una f-string con dos decimales.
-2. Concatenación, convirtiendo el valor numérico con `str()`.
-
-### `perfil_equipo.py`
-
-Desarrolla el punto 8, **Actividad integradora: perfil del equipo**. El programa solicita:
-
-- Nombre del equipo.
-- Comisión.
-- Cantidad de integrantes.
-- Nombre y rol inicial de cada integrante.
-
-Luego procesa y muestra la información del equipo. Para ello:
-
-- Normaliza los nombres usando `title()`.
-- Convierte el nombre del equipo a mayúsculas.
-- Cuenta sus caracteres con `len()`.
-- Genera una sigla con la inicial de cada palabra.
-- Recorre el nombre del equipo para verificar si contiene algún dígito mediante `isdigit()`.
-- Muestra los resultados usando f-strings.
-
-Las operaciones principales están organizadas en funciones:
-
-- `normalizar_nombre()`
-- `generar_sigla()`
-- `contiene_digitos()`
-
-La entrada y salida general se mantiene en el programa principal.
-
-### `casos_prueba_perfil_equipo.md`
-
-Documenta el punto 10 del PDF, **Verificación y análisis**. Incluye los resultados esperados y obtenidos para:
-
-- Un nombre de equipo formado por varias palabras.
-- Un nombre con letras y números.
-- Datos válidos de precio y cantidad.
-- La concatenación de una cadena con un número sin utilizar `str()`.
-- La búsqueda de un texto inexistente con `find()`.
-
-## Conceptos aprendidos
-
-### Inmutabilidad de las cadenas
-
-Las cadenas son secuencias ordenadas de caracteres, pero son inmutables. Se pueden consultar, recorrer y obtener partes mediante slicing, pero no se puede cambiar un carácter usando su índice. Para modificar un texto es necesario crear una cadena nueva.
-
-### Transformar y validar
-
-Los métodos de transformación generan un nuevo texto, por ejemplo `texto.upper()`. Los métodos de validación analizan el contenido y devuelven un booleano, por ejemplo `texto.isalpha()`.
-
-`isalpha()` devuelve `False` para `"Programacion en Python"` porque la cadena contiene espacios. Aunque cada palabra tenga solamente letras, el texto completo también contiene caracteres que no son alfabéticos.
-
-### Conversión y concatenación
-
-`input()` siempre devuelve cadenas. Por eso es necesario convertir los datos numéricos:
-
-```python
-precio = float(input("Precio unitario: "))
-cantidad = int(input("Cantidad: "))
+```text
+cd codigo/orientadorCuatro
+python pruebas.py
 ```
-
-No se puede concatenar directamente una cadena con un número. Para hacerlo mediante `+`, el número debe convertirse explícitamente con `str()`.
-
-## Cómo ejecutar los programas
-
-Desde la carpeta del proyecto, utilizar Python 3:
-
-```bash
-python principal.py
-python cadenaDeCaracteres.py
-python funcionesMetodos.py
-python perfil_equipo.py
-```
-
-`cadenaDeCaracteres.py` genera intencionalmente un `TypeError` al llegar a la línea que intenta modificar una cadena. Esto permite observar y explicar la inmutabilidad solicitada en el punto 5.
-
-`funcionesMetodos.py` y `perfil_equipo.py` solicitan datos por consola, por lo que deben ejecutarse en una terminal interactiva.
-
-## Mensajes de commit sugeridos
-
-- `Crea la estructura inicial del proyecto`
-- `Agrega ejercicios de cadenas`
-- `Implementa el perfil inicial del equipo`
-- `Documenta los casos de prueba`
-
