@@ -1,3 +1,4 @@
+<<<<<<< HEAD
 # Portafolio de entrega
 
 ## Programación I
@@ -13,6 +14,9 @@
 **GitHub:** [ProyectoProgramacionaIBlueSquad](https://github.com/jazlopezgallo/ProyectoProgramacionaIBlueSquad)
 
 **Integrantes:** Agustina Mendoza, Jazmin Lopez Gallo y Mauricio Abel Cuellar
+=======
+  # Orientador tres- BlueSquad
+>>>>>>> 0d242a25e7da7d930432c5b47b5c559828b8b8ce
 
 ## Descripción
 
