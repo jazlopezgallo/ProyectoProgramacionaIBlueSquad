@@ -1,4 +1,4 @@
-import Crmv2
+import ProyectoProgramacionaIBlueSquad.Proyecto.Crmv2 as Crmv2
 
 
 def menu_admin(vendedores, matriz_vendedores, productos, matriz_productos):
