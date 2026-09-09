@@ -18,7 +18,7 @@
 
 Este repositorio contiene los ejercicios y actividades prácticas realizados
 por el grupo BlueSquad durante la materia Programación I. El portfolio se
-completará progresivamente con los trabajos de los orientadores 1, 2, 3 y 4.
+completará progresivamente con los trabajos de los orientadores 1, 2, 3, 4 y 5.
 
 Los ejercicios están desarrollados principalmente en Python y se organizan por
 orientador para facilitar la lectura, la ejecución y la revisión de cada
@@ -67,6 +67,27 @@ La segmentación de actividades es la siguiente:
 
 **Ubicación:** [`codigo/orientadorCuatro`](codigo/orientadorCuatro)
 
+### Orientador 5
+
+Esta sección trabaja con diccionarios, operaciones sobre diccionarios, iteración,
+búsqueda y manipulación de datos. Los ejercicios integran conceptos de estructuras
+de datos más complejas y aplicaciones prácticas.
+
+La segmentación de actividades incluye:
+
+- **Actividad 1:** creación de diccionarios y reconocimiento de pares clave-valor.
+- **Actividad 2:** acceso a valores por clave, modificación de elementos.
+- **Actividad 3:** iteración sobre diccionarios, métodos como `keys()`, `values()` e `items()`.
+- **Actividad 4:** operaciones de diccionarios: `in`, `get()`, `pop()`, `update()`.
+- **Actividad 5:** diccionarios anidados y estructuras complejas.
+- **Actividad 6:** integración de diccionarios con listas para almacenamiento de registros.
+- **Actividad 7:** búsqueda y filtrado de datos en diccionarios.
+- **Actividad 8:** desafío integrador con manipulación avanzada de datos.
+- **Actividad 9:** casos de uso prácticos y aplicaciones del mundo real.
+- **Actividad 10:** verificación y análisis mediante casos de prueba.
+
+**Ubicación:** [`codigo/orientadorCinco`](codigo/orientadorCinco)
+
 ## Estructura esperada
 
 A medida que se incorporen los trabajos faltantes, el repositorio tendrá una
@@ -77,7 +98,8 @@ codigo/
 ├── orientadorUno/
 ├── orientadorDos/
 ├── orientadorTres/
-└── orientadorCuatro/
+├── orientadorCuatro/
+└── orientadorCinco/
 ```
 
 Cada carpeta puede incluir los archivos `.py`, los casos de prueba y un README
