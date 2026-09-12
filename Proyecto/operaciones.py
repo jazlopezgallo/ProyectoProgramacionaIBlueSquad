@@ -14,53 +14,33 @@ validaciones se resuelven con estructuras condicionales.
 # VALIDACIONES DE TEXTO Y NÚMEROS (sin try/except)
 # ---------------------------------------------------------------------------
 
-def es_entero(texto):
+def validarnumeros(numero):
     """
-    Determina si una cadena representa un número entero (positivo,
-    negativo o cero), sin usar try/except.
+    Valida que el string ingresado represente un número entero no negativo.
+    Devuelve False si no es un dígito válido, sin generar errores.
     """
-    texto = texto.strip()
-    if texto == "":
+    numero = numero.strip()
+    if not numero.isdigit():
         return False
-    if texto[0] in "+-":
-        texto = texto[1:]
-    return texto.isdigit()
+    return int(numero) >= 0
 
-
-def texto_valido(texto):
-    """Determina si una cadena no está vacía luego de quitar espacios."""
-    return texto.strip() != ""
-
-
-# ---------------------------------------------------------------------------
-# CREACIÓN DE ESTRUCTURAS
-# ---------------------------------------------------------------------------
-
-def crear_matriz(cantidad_filas):
-    """Crea una matriz de ceros con 'cantidad_filas' filas y 12 columnas (meses)."""
-    return [[0 for columna in range(12)] for fila in range(cantidad_filas)]
-
-
-def crear_meses_registrados():
-    """Crea la lista de estado de los 12 meses, todos en False (no procesados)."""
-    return [False for _ in range(12)]
-
+def validartexto(texto):
+    nombre = nombre.strip().capitalize()
+    texto = texto.strip()
+    valido = true 
+    if texto == "" or textoisdigit or texto in busqueda( lista, texto):
+        texto= input
+    return 
+   
 
 # ---------------------------------------------------------------------------
 # BÚSQUEDAS
 # ---------------------------------------------------------------------------
 
-def buscar_vendedor(vendedores_id, codigo):
+def busqueda(lista, buscado):
     """Busca un vendedor por código. Devuelve su posición o -1 si no existe."""
-    if codigo in vendedores_id:
-        return vendedores_id.index(codigo)
-    return -1
-
-
-def buscar_producto(productos_id, codigo):
-    """Busca un producto por código. Devuelve su posición o -1 si no existe."""
-    if codigo in productos_id:
-        return productos_id.index(codigo)
+    if buscado in lista:
+        return  lista.index(buscado )
     return -1
 
 
@@ -70,16 +50,8 @@ def buscar_producto(productos_id, codigo):
 
 def agregar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
                       matriz_vendedores, codigo, nombre, comision):
-    """
-    Valida y agrega un nuevo vendedor.
-    Reglas: código numérico > 0 y no repetido; nombre no vacío y no
-    duplicado; comisión > 0% y <= 100% (se guarda como decimal).
 
-    Devuelve:
-        (vendedores_id, vendedores_nombre, vendedores_comision,
-         matriz_vendedores, exito, mensaje)
-    """
-    nombre = nombre.strip().capitalize()
+    
 
     if codigo <= 0:
         return (vendedores_id, vendedores_nombre, vendedores_comision,
@@ -89,7 +61,7 @@ def agregar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
         return (vendedores_id, vendedores_nombre, vendedores_comision,
                 matriz_vendedores, False, "Error: el código ya se encuentra registrado.")
 
-    if not texto_valido(nombre):
+    if not validartexto(nombre):
         return (vendedores_id, vendedores_nombre, vendedores_comision,
                 matriz_vendedores, False, "Error: el nombre no puede estar vacío.")
 
@@ -97,15 +69,26 @@ def agregar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
         return (vendedores_id, vendedores_nombre, vendedores_comision,
                 matriz_vendedores, False, "Error: el nombre ya se encuentra registrado.")
 
-    if comision <= 0 or comision > 100:
+    if not validarnumeros(comision):
+        return (vendedores_id, vendedores_nombre, vendedores_comision,
+                matriz_vendedores, False, "Error: la comisión debe ser un número válido.")
+
+    if comision > 100:
         return (vendedores_id, vendedores_nombre, vendedores_comision,
                 matriz_vendedores, False,
-                "Error: la comisión debe ser mayor que 0% y menor o igual a 100%.")
+                "Error: la comisión no puede ser mayor a 100%.")
 
-    id_nuevo = vendedores_id[:] + [codigo]
-    nombre_nuevo = vendedores_nombre[:] + [nombre]
-    comision_nueva = vendedores_comision[:] + [comision / 100]
-    matriz_nueva = [fila[:] for fila in matriz_vendedores] + [[0] * 12]
+    id_nuevo = vendedores_id[:]
+    id_nuevo.append(codigo)
+
+    nombre_nuevo = vendedores_nombre[:]
+    nombre_nuevo.append(nombre)
+
+    comision_nueva = vendedores_comision[:]
+    comision_nueva.append(comision / 100)
+
+    matriz_nueva = [fila[:] for fila in matriz_vendedores]
+    matriz_nueva.append([0] * 12)
 
     mensaje = f"Vendedor '{nombre}' agregado con éxito (código {codigo})."
     return id_nuevo, nombre_nuevo, comision_nueva, matriz_nueva, True, mensaje
@@ -438,3 +421,10 @@ def ranking_vendedores(vendedores_nombre, matriz_vendedores):
 def top_vendedores(ranking, cantidad=3):
     """Devuelve el Top N del ranking utilizando slicing."""
     return ranking[:cantidad]
+
+
+def main():
+    matriz_vendedores, matriz_productos, precios, vendedores, productos, meses, \
+    vendedores_id_inicial, vendedores_comision_inicial, objetivo_mensual, productos_id_inicial = datos.creaciondatos()
+
+if __name__ == Main 
