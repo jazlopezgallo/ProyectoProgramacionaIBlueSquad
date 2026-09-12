@@ -8,6 +8,24 @@ def validartexto(texto):
     """Valida que el texto no esté vacío tras normalizarlo."""
     return texto.strip().capitalize() != ""
 
+# Wrapper for main.py compatibility
+def es_entero(texto):
+    """Wrapper that uses validarnumeros to check if text represents a non‑negative integer."""
+    return validarnumeros(texto)
+
+def texto_valido(texto):
+    """Wrapper that uses validartexto to check if text is non‑empty after stripping."""
+    return validartexto(texto)
+
+def buscar_vendedor(vendedores_id, codigo):
+    """Search for a vendor code using the generic busqueda function."""
+    return busqueda(vendedores_id, codigo)
+
+def buscar_producto(productos_id, codigo):
+    """Search for a product code using the generic busqueda function."""
+    return busqueda(productos_id, codigo)
+
+
 
 # ---------------------------------------------------------------------------
 # BÚSQUEDAS
