@@ -155,19 +155,8 @@ La solución aprovecha una arquitectura simple de tres capas:
 
 Esto es una buena base para explicar la esencia del proyecto en una defensa oral: el alumno puede demostrar que entiende la diferencia entre datos, validaciones y flujo de interacción. También se puede discutir cómo el proyecto podría ampliarse en una segunda versión con clases, persistencia en archivos o base de datos y una interfaz más robusta.
 
-## 9. Cómo explicar el proyecto en la defensa oral
 
-Durante la defensa, conviene responder con una estructura clara:
-
-1. ¿Qué problema resuelve la aplicación?
-2. ¿Qué hace `datos.py`?
-3. ¿Qué hace `operaciones.py`?
-4. ¿Qué hace `main.py`?
-5. ¿Cómo se registra una venta?
-6. ¿Cómo se calculan los reportes?
-7. ¿Qué validaciones protegen la integridad del sistema?
-
-## 10. Conclusión
+## 9. Conclusión
 
 BlueSquad SalesMatrix es una entrega educativa que combina manejo de listas paralelas, matrices, validaciones y reportes de ventas en una sola aplicación de consola. La versión actual de los archivos `main.py`, `operaciones.py` y `datos.py` refleja un diseño lineal, claro y manejable para una defensa oral de programación inicial.
 
