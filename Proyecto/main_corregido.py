@@ -1,5 +1,5 @@
 import datos
-import operaciones
+import operacionesv2 as operaciones
 
 def color_error(mensaje):
     print(f"\033[31m{mensaje}\033[0m")
@@ -12,14 +12,14 @@ def color_info(mensaje):
 
 def pedir_entero(mensaje):
     texto = input(mensaje)
-    while not operaciones.es_entero(texto):
+    while not operaciones.es_entero(texto)[0]:
         color_error("Error: debe ingresar un número entero válido.")
         texto = input(mensaje)
     return int(texto)
 
 def pedir_texto(mensaje):
     texto = input(mensaje).strip()
-    while not operaciones.texto_valido(texto):
+    while not operaciones.texto_valido(texto)[0]:
         color_error("Error: el dato no puede estar vacío.")
         texto = input(mensaje).strip()
     return texto
@@ -55,7 +55,7 @@ def gestionar_vendedores(ids, nombres, comisiones, matriz):
         color_exito(mensaje) if ok else color_error(mensaje)
     elif opcion == "3":
         codigo = pedir_entero("Código a buscar: ")
-        posicion = operaciones.buscar_vendedor(ids, codigo)
+        posicion = operaciones.busqueda_secuencial(ids, codigo)
         if posicion == -1:
             color_error("Error: el vendedor no existe.")
         else:
@@ -83,7 +83,7 @@ def gestionar_productos(ids, nombres, precios, matriz):
         color_exito(mensaje) if ok else color_error(mensaje)
     elif opcion == "3":
         codigo = pedir_entero("Código a buscar: ")
-        posicion = operaciones.buscar_producto(ids, codigo)
+        posicion = operaciones.busqueda_secuencial(ids, codigo)
         if posicion == -1:
             color_error("Error: el producto no existe.")
         else:
@@ -187,7 +187,7 @@ def menu_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
                   productos_id, productos_precio, matriz_vendedores,
                   matriz_productos, meses_registrados, meses):
     codigo_vendedor = pedir_entero("Ingrese su código de vendedor: ")
-    posicion = operaciones.buscar_vendedor(vendedores_id, codigo_vendedor)
+    posicion = operaciones.busqueda_secuencial(vendedores_id, codigo_vendedor)
 
     if posicion == -1:
         color_error("El código de vendedor no existe.")
