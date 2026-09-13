@@ -1,146 +1,173 @@
 # BlueSquad SalesMatrix — documentación técnica
 
-Este proyecto implementa una pequeña aplicación de consola para registrar ventas, administrar vendedores y productos, y consultar informes útiles para una empresa de ventas.
+Este proyecto implementa una aplicación de consola para registrar ventas, administrar vendedores y productos y consultar reportes de cumplimiento operativos. La lógica está organizada en tres archivos principales que representan una separación clara entre datos, lógica de negocio e interfaz:
 
-La estructura del trabajo está organizada en tres archivos principales:
+- `datos.py`: carga la estructura inicial del sistema.
+- `operaciones.py`: contiene las validaciones, búsquedas, altas, bajas, registro de ventas y cálculos estadísticos.
+- `main.py`: integra la interfaz por consola y delega las operaciones en `operaciones.py`.
 
-- [Proyecto/main_corregido.py](Proyecto/main_corregido.py): módulo de interfaz y menús.
-- [Proyecto/operaciones_corregido.py](Proyecto/operaciones_corregido.py): lógica de negocio, validaciones, búsquedas e informes.
-- [Proyecto/datos.py](Proyecto/datos.py): datos base del sistema y configuración inicial.
+La intención del proyecto es mantener una solución simple, legible y educativa, siguiendo el estilo de una primera entrega de programación en Python.
 
-La idea de esta organización es separar claramente la capa de presentación de la capa de cálculo, evitando mezclar mensajes de consola con reglas del negocio.
+## 1. Objetivo del sistema
 
-## 1. Estructura del proyecto
+BlueSquad SalesMatrix es una pequeña aplicación de gestión comercial para una empresa de ventas. El sistema permite:
 
-### datos.py
+- registrar vendedores y productos;
+- dar de alta y baja vendedores y productos;
+- registrar ventas con vendedor, producto, mes y cantidad;
+- consultar matrices de acumulación por vendedor y producto;
+- identificar el producto más vendido;
+- identificar el vendedor de mayor volumen;
+- identificar el mes con mayor cantidad de unidades vendidas;
+- construir rankings de vendedores;
+- comparar el cumplimiento del objetivo mensual del negocio.
 
-Este archivo contiene la carga inicial del sistema. Define:
+## 2. Estructura actual del proyecto
 
-- los meses del año;
-- la lista inicial de vendedores;
-- los códigos iniciales de vendedores;
-- las comisiones iniciales de los vendedores;
-- la lista inicial de productos;
-- los códigos y precios iniciales de los productos;
-- la matriz de vendedores y la matriz de productos en ceros;
-- el objetivo mensual del negocio.
+### `datos.py`
 
-Su función es ser el archivo de datos base, sin pedir información ni imprimir mensajes.
+Este archivo es el módulo de datos base. Su función es preparar el estado inicial de la aplicación, sin pedir información ni imprimir mensajes. En la versión actual, la función principal es:
 
-### operaciones_corregido.py
+- `creaciondatos()`
 
-Este archivo contiene la lógica del sistema. En él se resuelven:
+La función construye:
 
-- validaciones de texto y enteros;
-- búsqueda de elementos por código;
+- `meses`: tupla con los doce meses del año;
+- `vendedores`: nombres de los vendedores iniciales;
+- `vendedores_id_inicial`: códigos iniciales de vendedores;
+- `vendedores_comision_inicial`: comisiones iniciales de cada vendedor expresadas como porcentaje decimal;
+- `productos`: nombres iniciales de productos;
+- `productos_id_inicial`: códigos de productos;
+- `precios`: precios unitarios de cada producto;
+- `matriz_vendedores`: matriz de importes acumulados por vendedor y mes;
+- `matriz_productos`: matriz de unidades acumuladas por producto y mes;
+- `objetivo_mensual`: meta comercial mensual.
+
+El paquete de datos es una fuente de inspiración para el arranque del programa. Mantener estos valores en un archivo separado ayuda a que el proyecto sea más limpio y reutilizable.
+
+### `operaciones.py`
+
+Este archivo contiene la lógica central del negocio. Aquí se resuelven:
+
+- validaciones sencillas de texto, enteros y rangos;
+- búsqueda secuencial de listas;
 - alta y baja de vendedores;
 - alta y baja de productos;
-- registro de venta;
-- cálculos de reportes y rankings;
-- consulta de importes, comisiones y proyecciones.
+- registro de ventas;
+- cálculo de total de ventas por vendedor;
+- cálculo de comisión por vendedor;
+- cálculo de proyección anual;
+- búsqueda del producto más vendido;
+- búsqueda del vendedor con mayor volumen;
+- cálculo del mes con mayor número de unidades;
+- ranking de vendedores y top 3;
+- cumplimiento del objetivo mensual.
 
-Todas estas funciones reciben datos por parámetros y devuelven un resultado con una tupla que permite al archivo de interfaz mostrar mensajes de acuerdo con el éxito o el error de la operación.
+Además, el diseño utiliza una convención útil: cada función de validación o alta retorna una tupla con el estado de la operación, por ejemplo `[ok, datos, mensaje]` o una variante con más valores, y así permite que la interfaz muestre mensajes uniformes sin mezclar la lógica con la salida por consola.
 
-### main_corregido.py
+### `main.py`
 
-Este archivo funciona como capa de presentación. Su rol es:
+Este archivo es la capa de presentación y se encarga de:
 
-- mostrar colores para mensajes de error, éxito e información;
-- mostrar menús y matrices;
-- pedir información por consola;
-- delegar las decisiones de negocio en operaciones_corregido.py;
-- conectar el flujo principal entre la pantalla del administrador y la pantalla del vendedor.
+- mostrar los menús por consola;
+- pedir entradas de usuario;
+- mostrar mensajes con colores para información, error y éxito;
+- recibir resultados de `operaciones.py` y presentarlos correctamente;
+- permitir el flujo principal con dos perfiles: administrador y vendedor.
 
-El archivo principal no reemplaza la lógica del negocio y no debe multiplicar validaciones.
+La función `main()` arranca el sistema a partir de `datos.creaciondatos()` y luego entrega el control a dos menús principales:
 
-## 2. Flujo principal
-
-Cuando el programa arranca, se construyen los datos de base a partir de `datos.creaciondatos()`:
-
-- listas paralelas para vendedores: IDs, nombres y comisiones;
-- listas paralelas para productos: IDs, nombres y precios;
-- matrices para guardar importes y unidades por mes;
-- lista `meses_registrados` para saber si un mes ya fue usado.
-
-El usuario ingresa al sistema por la opción principal:
-
-1. Administrador
-2. Vendedor
-3. Salir
-
-Si el usuario elige administrador, puede:
-
-- gestionar vendedores;
-- gestionar productos;
-- registrar una venta;
-- consultar matrices;
-- consultar el producto más vendido;
-- consultar el vendedor mayor volumen;
-- consultar el mes con mayor cantidad de unidades;
-- consultar el ranking de vendedores y el top 3;
-- consultar el cumplimiento del objetivo mensual.
-
-Si el usuario elige vendedor, ingresa su código y luego puede:
-
-- registrar una venta con su código ya fijo;
-- consultar su importe total vendido;
-- consultar su comisión;
-- consultar su proyección estimada anual.
+1. `menu_administrador()` — gestiona vendedores, productos, ventas y reportes.
+2. `menu_vendedor()` — valida el código del vendedor y permite registrar ventas y consultar indicadores propios.
 
 ## 3. Modelo de datos
 
-El proyecto usa una representación simple basada en listas paralelas y matrices:
+El proyecto usa una representación simple basada en listas paralelas y dos matrices:
 
-- El arreglo de IDs, nombres y comisiones de los vendedores queda sincronizado con las columnas de la matriz de vendedores.
-- El arreglo de IDs, nombres y precios de los productos queda sincronizado con las columnas de la matriz de productos.
-- La matriz de vendedores representa el importe vendido por vendedor y por mes.
-- La matriz de productos representa la cantidad de unidades vendidas por producto y por mes.
-- La lista `meses_registrados` indica qué meses ya fueron usados en alguna venta.
+- `vendedores_id`, `vendedores_nombre`, `vendedores_comision` están sincronizados con las filas o columnas de la matriz de ventas de vendedores.
+- `productos_id`, `productos_nombre`, `productos_precio` están sincronizados con las filas o columnas de la matriz de productos.
+- `matriz_vendedores` guarda el importe acumulado por vendedor y mes.
+- `matriz_productos` guarda la cantidad de unidades vendidas por producto y mes.
+- `meses_registrados` indica qué meses ya recibieron al menos una venta.
 
-## 4. Reglas de validación
+Esta manera de representar los datos es suficiente para un proyecto académico y refleja la idea de separar estructura de datos de operación y cálculo.
 
-Las principales validaciones implementadas están en el módulo de operaciones:
+## 4. Flujo principal de ejecución
 
-- los códigos deben ser válidos y no duplicados;
-- los nombres no pueden quedar vacíos ni repetirse;
-- la comisión debe estar entre 0 y 100;
-- el precio de producto debe ser mayor que cero;
-- la cantidad de unidades vendidas debe ser mayor que cero;
-- el mes debe estar dentro del rango 1–12;
-- el vendedor y el producto deben existir antes de registrar una venta.
+Cuando se ejecuta `main.py`, el flujo es:
 
-La filosofía es respetar la restricción de la entrega: no usar manejo de excepciones para esta primera etapa.
+1. Cargar los datos base con `datos.creaciondatos()`.
+2. Crear la lista `meses_registrados` con `False` para cada mes.
+3. Mostrar el menú principal:
+   - Administrador
+   - Vendedor
+   - Salir
+4. Dependiendo de la opción elegida:
+   - El administrador accede a gestión de vendedores, productos, ventas y reportes.
+   - El vendedor ingresa su código y puede registrar ventas y consultar su importe, comisión y proyección.
 
-## 5. Reglas de cálculo
+## 5. Reglas de validación
 
-La lógica de negocio resuelve informes usando las matrices acumuladas:
+Las validaciones se centralizan en `operaciones.py` y hacen referencia a:
 
-- el total anual de ventas de la empresa;
-- el importe total vendido por vendedor;
-- la comisión del vendedor;
-- el promedio mensual y la proyección anual;
-- el producto más vendido;
-- el vendedor con mayor volumen de ventas;
-- el mes con mayor cantidad de unidades;
-- el ranking de vendedores y el top 3;
-- el cumplimiento del objetivo del mes.
+- código entero válido y mayor a cero;
+- texto no vacío;
+- nombre y código no duplicado;
+- rango de comisión entre 0 y 100;
+- precio válido y positivo;
+- cantidad de unidades mayor a cero;
+- mes entre 1 y 12;
+- existencia de vendedor y producto antes de registrar una venta.
 
-## 6. Interfaz y salida por consola
+La lógica evita el uso de manejo de excepciones como mecanismo principal para controlar errores, porque la entrega pedía resolver validaciones de forma estructurada y directa.
 
-El archivo principal usa colores de salida para diferenciar mensajes:
+## 6. Reglas de cálculo
 
-- rojo para errores;
-- verde para mensajes de éxito;
-- azul para encabezados o menús de información.
+El sistema usa las matrices para producir reportes de negocio. Algunos cálculos importantes son:
 
-Esto ayuda a hacer la consola más legible y a distinguir mejor el resultado de las operaciones.
+- total anual de ventas por vendedor o producto;
+- comisión de cada vendedor según el porcentaje y el importe acumulado;
+- promedio mensual y proyección anual de cada vendedor;
+- producto más vendido por cantidad de unidades;
+- vendedor con mayor volumen de ventas por importe acumulado;
+- mes con mayor cantidad de unidades registradas;
+- ranking y top 3 de vendedores;
+- cumplimiento del objetivo mensual comparando ventas por vendedor y mes.
 
-## 7. Observaciones finales
+## 7. Interfaz y experiencia de consola
 
-El proyecto está pensado para una entrega de programación inicial y mantiene una estructura clara:
+El archivo `main.py` implementa una interfaz textual con:
 
-- `datos.py` define datos de arranque;
-- `operaciones_corregido.py` recoge reglas y cálculos;
-- `main_corregido.py` maneja la interacción con el usuario.
+- mensajes de error en rojo;
+- mensajes de éxito en verde;
+- mensajes informativos en azul;
+- menú de opciones y matrices legibles por consola.
 
-La solución es simple, didáctica y adecuada para una primera etapa de implementación, porque separa el problema en capas sin introducir complejidades adicionales como clases o archivos nuevos.
+Estos elementos permiten que el usuario comprenda rápidamente la diferencia entre una operación rechazada, una operación aceptada y una consulta de información.
+
+## 8. Observaciones de diseño
+
+La solución aprovecha una arquitectura simple de tres capas:
+
+- `datos.py` aporta la semilla de información;
+- `operaciones.py` contiene la lógica y los cálculos;
+- `main.py` orquesta la interacción humano-sistema.
+
+Esto es una buena base para explicar la esencia del proyecto en una defensa oral: el alumno puede demostrar que entiende la diferencia entre datos, validaciones y flujo de interacción. También se puede discutir cómo el proyecto podría ampliarse en una segunda versión con clases, persistencia en archivos o base de datos y una interfaz más robusta.
+
+## 9. Cómo explicar el proyecto en la defensa oral
+
+Durante la defensa, conviene responder con una estructura clara:
+
+1. ¿Qué problema resuelve la aplicación?
+2. ¿Qué hace `datos.py`?
+3. ¿Qué hace `operaciones.py`?
+4. ¿Qué hace `main.py`?
+5. ¿Cómo se registra una venta?
+6. ¿Cómo se calculan los reportes?
+7. ¿Qué validaciones protegen la integridad del sistema?
+
+## 10. Conclusión
+
+BlueSquad SalesMatrix es una entrega educativa que combina manejo de listas paralelas, matrices, validaciones y reportes de ventas en una sola aplicación de consola. La versión actual de los archivos `main.py`, `operaciones.py` y `datos.py` refleja un diseño lineal, claro y manejable para una defensa oral de programación inicial.
+

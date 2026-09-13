@@ -1,5 +1,5 @@
 import datos
-import operacionesv2 as operaciones
+import operaciones as operaciones
 
 def color_error(mensaje):
     print(f"\033[31m{mensaje}\033[0m")
