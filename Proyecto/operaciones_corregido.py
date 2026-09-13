@@ -1,21 +1,26 @@
+def busqueda(ids, codigo):
+    for indice, valor in enumerate(ids):
+        if valor == codigo:
+            return indice
+    return -1
+
 def validarnumeros(numero):
-    """Valida si el dato es un entero no negativo."""
-    numero = str(numero).strip()
-    return numero.isdigit() and int(numero) >= 0
+    if numero is None:
+        return False
+    texto = str(numero).strip()
+    return texto.isdigit()
 
 def validartexto(texto):
-    """Valida que el texto no quede vacío."""
+    if texto is None:
+        return False
     return texto.strip() != ""
 
+# Wrapper for main.py compatibility
 def es_entero(texto):
     return validarnumeros(texto)
 
 def texto_valido(texto):
     return validartexto(texto)
-
-def busqueda(lista, buscado):
-    """Devuelve la posición del código buscado o -1."""
-    return lista.index(buscado) if buscado in lista else -1
 
 def buscar_vendedor(vendedores_id, codigo):
     return busqueda(vendedores_id, codigo)
@@ -40,7 +45,6 @@ def agregar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
             vendedores_comision + [comision / 100],
             matriz_vendedores + [[0] * columnas], True,
             f"Vendedor '{nombre}' agregado con éxito.")
-
 
 def eliminar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
                       matriz_vendedores, codigo):
