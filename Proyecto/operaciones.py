@@ -1,287 +1,176 @@
 # ---------------------------------------------------------------------------
-# FUNCIONES ORIGINALES
+# FUNCIONES BÁSICAS Y VALIDACIONES
+# Las que devuelven datos de distinto tipo usan tuplas (no listas).
+# Los wrappers de validación devuelven (ok, valor_limpio, mensaje_error).
 # ---------------------------------------------------------------------------
 
 def es_entero(valor):
+    """Devuelve (es_valido, numero)."""
     valor_str = str(valor).strip()
-    if valor_str.isdigit() == False:
-        return [False, -1]
-    numero = int(valor_str)
-    return [True, numero]
+    return (valor_str.isdigit(), int(valor_str) if valor_str.isdigit() else -1)
 
 
 def texto_valido(texto):
+    """Devuelve (es_valido, texto_limpio)."""
     texto_limpio = str(texto).strip().capitalize()
-    if texto_limpio == "":
-        return [False, ""]
-    return [True, texto_limpio]
+    return (texto_limpio != "", texto_limpio)
 
 
 def busqueda_secuencial(lista, buscado):
-    for i in range(len(lista)):
-        if lista[i] == buscado:
-            return i
-    return -1
+    """Posición de 'buscado' en 'lista' o -1 si no está."""
+    return lista.index(buscado) if buscado in lista else -1
 
 
-def crear_meses_registrados():
-    return [False for _ in range(12)]
+def validar_numero(valor, minimo, maximo, mensaje_error):
+    """Entero dentro de [minimo, maximo]. Con maximo = None no hay tope."""
+    ok, numero = es_entero(valor)
+    ok = ok and numero >= minimo and (maximo is None or numero <= maximo)
+    return (ok, numero if ok else -1, "" if ok else mensaje_error)
 
 
-# ---------------------------------------------------------------------------
-# WRAPPERS DE VALIDACIÓN
-# Cada uno devuelve [ok, valor_limpio, mensaje_error]
-# ---------------------------------------------------------------------------
-
-def validar_numero_positivo(valor, mensaje_error):
-    """Valida que sea entero y mayor a 0."""
-    resultado = es_entero(valor)
-    if resultado[0] == False or resultado[1] <= 0:
-        return [False, -1, mensaje_error]
-    return [True, resultado[1], ""]
-
-
-def validar_numero_en_rango(valor, minimo, maximo, mensaje_error):
-    """Valida que sea entero y esté dentro de [minimo, maximo]."""
-    resultado = es_entero(valor)
-    if resultado[0] == False or resultado[1] < minimo or resultado[1] > maximo:
-        return [False, -1, mensaje_error]
-    return [True, resultado[1], ""]
-
-
-def validar_texto_no_vacio(texto, mensaje_error):
-    """Valida que el texto no quede vacío tras limpiarlo."""
-    resultado = texto_valido(texto)
-    if resultado[0] == False:
-        return [False, "", mensaje_error]
-    return [True, resultado[1], ""]
+def validar_texto(texto, mensaje_error):
+    ok, texto_limpio = texto_valido(texto)
+    return (ok, texto_limpio, "" if ok else mensaje_error)
 
 
 def validar_no_duplicado(lista, valor, mensaje_error):
-    """Valida que 'valor' NO esté ya en 'lista' (para altas)."""
-    if busqueda_secuencial(lista, valor) != -1:
-        return [False, valor, mensaje_error]
-    return [True, valor, ""]
+    """Para altas: 'valor' NO debe estar en 'lista'."""
+    ok = valor not in lista
+    return (ok, valor, "" if ok else mensaje_error)
 
 
 def validar_existe(lista, valor, mensaje_error):
-    """Valida que 'valor' SÍ esté en 'lista' y devuelve su posición (para bajas)."""
+    """Para bajas y ventas: 'valor' SÍ debe estar en 'lista'. Devuelve su posición."""
     posicion = busqueda_secuencial(lista, valor)
-    if posicion == -1:
-        return [False, -1, mensaje_error]
-    return [True, posicion, ""]
+    return (posicion != -1, posicion, "" if posicion != -1 else mensaje_error)
+
+
+def primer_error(validaciones):
+    """Mensaje de la primera validación fallida, o "" si todas son correctas."""
+    errores = [validacion[2] for validacion in validaciones if not validacion[0]]
+    return errores[0] if errores else ""
+
+
+def resultado(error, mensaje_ok):
+    """Arma la tupla (ok, mensaje) que devuelven todas las operaciones."""
+    return (error == "", error if error else mensaje_ok)
 
 
 # ---------------------------------------------------------------------------
-# ALTA Y BAJA DE VENDEDORES
+# ALTA Y BAJA DE VENDEDORES Y PRODUCTOS
+# Las listas paralelas y la matriz se modifican en el lugar (sin copias).
 # ---------------------------------------------------------------------------
 
-def agregar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
-                     matriz_vendedores, codigo, nombre, comision):
-
-    estado_actual = (vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores)
-
-    validacion = validar_numero_positivo(codigo, "Error: el código debe ser numérico y mayor que cero.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo = validacion[1]
-
-    validacion = validar_texto_no_vacio(nombre, "Error: el nombre no puede estar vacío.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    nombre = validacion[1]
-
-    validacion = validar_numero_en_rango(comision, 0, 100, "Error: comisión inválida (debe ser entre 0 y 100).")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    comision = validacion[1]
-
-    validacion = validar_no_duplicado(vendedores_id, codigo, "Error: código de vendedor ya registrado.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-
-    validacion = validar_no_duplicado(vendedores_nombre, nombre, "Error: el nombre ya existe.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-
-    # Inserción
-    id_nuevo = vendedores_id[:] + [codigo]
-    nombre_nuevo = vendedores_nombre[:] + [nombre]
-    comision_nueva = vendedores_comision[:] + [comision / 100]
-    matriz_nueva = [fila[:] for fila in matriz_vendedores] + [[0] * 12]
-
-    return id_nuevo, nombre_nuevo, comision_nueva, matriz_nueva, True, f"Vendedor '{nombre}' agregado exitosamente."
+def agregar_elemento(ids, nombres, valores, matriz, codigo, nombre, v_valor, entidad):
+    """Alta común a vendedores y productos. v_valor es la validación de la comisión o del precio."""
+    v_codigo = validar_numero(codigo, 1, None, "Error: el código debe ser numérico y mayor que cero.")
+    v_nombre = validar_texto(nombre, "Error: el nombre no puede estar vacío.")
+    error = primer_error([v_codigo, v_nombre, v_valor,
+                          validar_no_duplicado(ids, v_codigo[1], f"Error: código de {entidad} ya registrado."),
+                          validar_no_duplicado(nombres, v_nombre[1], f"Error: el {entidad} ya existe.")])
+    if error == "":
+        ids.append(v_codigo[1])
+        nombres.append(v_nombre[1])
+        valores.append(v_valor[1])
+        matriz.append([0] * 12)
+    return resultado(error, f"{entidad.capitalize()} '{v_nombre[1]}' agregado.")
 
 
-def eliminar_vendedor(vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores, codigo):
+def agregar_vendedor(ids, nombres, comisiones, matriz, codigo, nombre, comision):
+    """La comisión se ingresa como porcentaje (mayor a 0 y hasta 100) y se guarda como decimal."""
+    ok, porcentaje, mensaje = validar_numero(comision, 1, 100, "Error: la comisión debe ser mayor a 0 y como máximo 100.")
+    return agregar_elemento(ids, nombres, comisiones, matriz, codigo, nombre, (ok, porcentaje / 100, mensaje), "vendedor")
 
-    estado_actual = (vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores)
 
-    validacion = validar_numero_positivo(codigo, "Error: código inválido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo = validacion[1]
+def agregar_producto(ids, nombres, precios, matriz, codigo, nombre, precio):
+    v_precio = validar_numero(precio, 1, None, "Error: el precio debe ser mayor a 0.")
+    return agregar_elemento(ids, nombres, precios, matriz, codigo, nombre, v_precio, "producto")
 
-    validacion = validar_existe(vendedores_id, codigo, "Error: el vendedor no existe.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    posicion = validacion[1]
 
-    nombre = vendedores_nombre[posicion]
-    id_nuevo = vendedores_id[:posicion] + vendedores_id[posicion + 1:]
-    nombre_nuevo = vendedores_nombre[:posicion] + vendedores_nombre[posicion + 1:]
-    comision_nueva = vendedores_comision[:posicion] + vendedores_comision[posicion + 1:]
-    matriz_nueva = [fila[:] for i, fila in enumerate(matriz_vendedores) if i != posicion]
-
-    return id_nuevo, nombre_nuevo, comision_nueva, matriz_nueva, True, f"Vendedor '{nombre}' eliminado."
+def eliminar_elemento(ids, nombres, valores, matriz, codigo, entidad):
+    """Baja común a vendedores y productos. Solo se permite si no tiene ventas registradas,
+    para no perder información histórica ni modificar los totales de la empresa."""
+    ok, posicion, error = validar_existe(ids, codigo, f"Error: el {entidad} no existe.")
+    if ok and sum(matriz[posicion]) > 0:
+        error = f"Error: no se puede eliminar un {entidad} con ventas registradas."
+    nombre = ""
+    if error == "":
+        nombre = nombres.pop(posicion)
+        for lista in (ids, valores, matriz):
+            lista.pop(posicion)
+    return resultado(error, f"{entidad.capitalize()} '{nombre}' eliminado.")
 
 
 # ---------------------------------------------------------------------------
-# ALTA Y BAJA DE PRODUCTOS
+# MESES PROCESADOS
+# Regla: un mes pasa a procesado (True) cuando se registra una venta en él,
+# o cuando el administrador lo cierra manualmente aunque no haya tenido ventas.
 # ---------------------------------------------------------------------------
 
-def agregar_producto(productos_id, productos_nombre, productos_precio,
-                     matriz_productos, codigo, nombre, precio):
-
-    estado_actual = (productos_id, productos_nombre, productos_precio, matriz_productos)
-
-    validacion = validar_numero_positivo(codigo, "Error: código inválido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo = validacion[1]
-
-    validacion = validar_texto_no_vacio(nombre, "Error: nombre vacío.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    nombre = validacion[1]
-
-    validacion = validar_numero_positivo(precio, "Error: precio inválido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    precio = validacion[1]
-
-    validacion = validar_no_duplicado(productos_id, codigo, "Error: código de producto ya registrado.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-
-    validacion = validar_no_duplicado(productos_nombre, nombre, "Error: producto ya existente.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-
-    # Inserción
-    id_nuevo = productos_id[:] + [codigo]
-    nombre_nuevo = productos_nombre[:] + [nombre]
-    precio_nuevo = productos_precio[:] + [precio]
-    matriz_nueva = [fila[:] for fila in matriz_productos] + [[0] * 12]
-
-    return id_nuevo, nombre_nuevo, precio_nuevo, matriz_nueva, True, f"Producto '{nombre}' agregado."
-
-
-def eliminar_producto(productos_id, productos_nombre, productos_precio, matriz_productos, codigo):
-
-    estado_actual = (productos_id, productos_nombre, productos_precio, matriz_productos)
-
-    validacion = validar_numero_positivo(codigo, "Error: código inválido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo = validacion[1]
-
-    validacion = validar_existe(productos_id, codigo, "Error: el producto no existe.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    posicion = validacion[1]
-
-    nombre = productos_nombre[posicion]
-    id_nuevo = productos_id[:posicion] + productos_id[posicion + 1:]
-    nombre_nuevo = productos_nombre[:posicion] + productos_nombre[posicion + 1:]
-    precio_nuevo = productos_precio[:posicion] + productos_precio[posicion + 1:]
-    matriz_nueva = [fila[:] for i, fila in enumerate(matriz_productos) if i != posicion]
-
-    return id_nuevo, nombre_nuevo, precio_nuevo, matriz_nueva, True, f"Producto '{nombre}' eliminado."
+def procesar_mes(meses_registrados, meses, mes):
+    ok, numero, error = validar_numero(mes, 1, 12, "Error: el mes debe estar entre 1 y 12.")
+    if ok and meses_registrados[numero - 1]:
+        error = f"{meses[numero - 1]} ya estaba marcado como procesado."
+    if error == "":
+        meses_registrados[numero - 1] = True
+    return resultado(error, f"{meses[numero - 1]} marcado como procesado.")
 
 
 # ---------------------------------------------------------------------------
 # REGISTRO DE VENTAS
+# Actualiza en conjunto la matriz de productos (unidades vendidas)
+# y la matriz de vendedores (importe vendido).
 # ---------------------------------------------------------------------------
 
 def registrar_venta(vendedores_id, productos_id, productos_precio,
                     matriz_vendedores, matriz_productos, meses_registrados,
                     codigo_vendedor, codigo_producto, mes, cantidad):
+    v_vendedor = validar_existe(vendedores_id, codigo_vendedor, "Error: el vendedor no existe.")
+    v_producto = validar_existe(productos_id, codigo_producto, "Error: el producto no existe.")
+    v_mes = validar_numero(mes, 1, 12, "Error: el mes debe estar entre 1 y 12.")
+    v_cantidad = validar_numero(cantidad, 1, None, "Error: la cantidad debe ser mayor a 0.")
+    error = primer_error([v_vendedor, v_producto, v_mes, v_cantidad])
+    importe = 0
+    if error == "":
+        columna = v_mes[1] - 1
+        importe = v_cantidad[1] * productos_precio[v_producto[1]]
+        matriz_vendedores[v_vendedor[1]][columna] += importe
+        matriz_productos[v_producto[1]][columna] += v_cantidad[1]
+        meses_registrados[columna] = True
+    return resultado(error, f"Venta registrada: ${importe}.")
 
-    estado_actual = (matriz_vendedores, matriz_productos, meses_registrados)
-
-    validacion = validar_numero_positivo(codigo_vendedor, "Error: código de vendedor no válido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo_vendedor = validacion[1]
-
-    validacion = validar_numero_positivo(codigo_producto, "Error: código de producto no válido.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    codigo_producto = validacion[1]
-
-    validacion = validar_numero_en_rango(mes, 1, 12, "Error: el mes debe estar entre 1 y 12.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    mes = validacion[1]
-
-    validacion = validar_numero_positivo(cantidad, "Error: cantidad no válida.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    cantidad = validacion[1]
-
-    validacion = validar_existe(vendedores_id, codigo_vendedor, "Error: el vendedor no existe.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    posicion_vendedor = validacion[1]
-
-    validacion = validar_existe(productos_id, codigo_producto, "Error: el producto no existe.")
-    if validacion[0] == False:
-        return estado_actual + (False, validacion[2])
-    posicion_producto = validacion[1]
-
-    importe = cantidad * productos_precio[posicion_producto]
-
-    matriz_vendedores_nueva = [fila[:] for fila in matriz_vendedores]
-    matriz_productos_nueva = [fila[:] for fila in matriz_productos]
-    meses_registrados_nuevo = meses_registrados[:]
-
-    matriz_vendedores_nueva[posicion_vendedor][mes - 1] += importe
-    matriz_productos_nueva[posicion_producto][mes - 1] += cantidad
-    meses_registrados_nuevo[mes - 1] = True
-
-    return matriz_vendedores_nueva, matriz_productos_nueva, meses_registrados_nuevo, True, f"Venta registrada: ${importe}."
 
 # ---------------------------------------------------------------------------
-# REPORTES Y ESTADÍSTICAS (Integrado)
+# INFORMES E INDICADORES
 # ---------------------------------------------------------------------------
 
-def producto_mas_vendido(productos_nombre, matriz_productos):
-    totales = [sum(fila) for fila in matriz_productos]
-    if not totales or max(totales) == 0:
-        return [], 0
-    maximo = max(totales)
-    return [productos_nombre[i] for i, total in enumerate(totales) if total == maximo], maximo
+def maximos(nombres, totales, minimo):
+    """(nombres con el total máximo, máximo) contemplando empates.
+    Si no hay totales válidos (>= minimo) devuelve ([], 0)."""
+    maximo = max(totales) if totales else -1
+    ganadores = [nombre for nombre, total in zip(nombres, totales) if total == maximo and maximo >= minimo]
+    return (ganadores, maximo if ganadores else 0)
 
 
-def vendedor_mayor_volumen(vendedores_nombre, matriz_vendedores):
-    totales = [sum(fila) for fila in matriz_vendedores]
-    if not totales or max(totales) == 0:
-        return [], 0
-    maximo = max(totales)
-    return [vendedores_nombre[i] for i, total in enumerate(totales) if total == maximo], maximo
+def mayor_total(nombres, matriz):
+    """Producto más vendido (matriz de productos) o vendedor con mayor importe (matriz de vendedores)."""
+    return maximos(nombres, [sum(fila) for fila in matriz], 1)
 
 
-def mes_mayor_unidades(matriz_productos, meses_registrados, meses):
-    totales = [sum(fila[i] for fila in matriz_productos) if meses_registrados[i] else -1
-               for i in range(len(meses))]
-    if not totales or max(totales) < 0:
-        return [], 0
-    maximo = max(totales)
-    return [meses[i] for i, total in enumerate(totales) if total == maximo], maximo
+def totales_por_mes(matriz, meses_registrados):
+    """Total de cada mes; los meses no procesados valen -1 para que no participen."""
+    return [sum(columna) if registrado else -1
+            for columna, registrado in zip(zip(*matriz), meses_registrados)]
+
+
+def mes_mayor_total(matriz, meses_registrados, meses):
+    """Mes con más unidades (matriz de productos) o mayor facturación (matriz de vendedores).
+    En ambos casos solo participan los meses procesados."""
+    return maximos(meses, totales_por_mes(matriz, meses_registrados), 0)
 
 
 def ranking_vendedores(vendedores_nombre, matriz_vendedores):
+    """Ranking descendente por importe vendido."""
     totales = [sum(fila) for fila in matriz_vendedores]
     return sorted(zip(vendedores_nombre, totales), key=lambda dato: dato[1], reverse=True)
 
@@ -290,32 +179,30 @@ def top_vendedores(ranking, cantidad):
     return ranking[:cantidad]
 
 
-def cumplimiento_objetivo_mes(vendedores_nombre, matriz_vendedores,
-                               mes, objetivo_mensual, meses_registrados):
-    if mes < 1 or mes > len(meses_registrados):
-        return [], [], False
-    if not meses_registrados[mes - 1]:
-        return [], [], False
-
+def cumplimiento_objetivo_mes(vendedores_nombre, matriz_vendedores, mes, objetivo_mensual, meses_registrados):
+    """(alcanzaron, no_alcanzaron, mes_procesado) para el mes elegido."""
+    procesado = 1 <= mes <= len(meses_registrados) and meses_registrados[mes - 1]
     alcanzaron = [nombre for nombre, fila in zip(vendedores_nombre, matriz_vendedores)
-                  if fila[mes - 1] >= objetivo_mensual]
+                  if procesado and fila[mes - 1] >= objetivo_mensual]
     no_alcanzaron = [nombre for nombre, fila in zip(vendedores_nombre, matriz_vendedores)
-                     if fila[mes - 1] < objetivo_mensual]
-    return alcanzaron, no_alcanzaron, True
+                     if procesado and fila[mes - 1] < objetivo_mensual]
+    return (alcanzaron, no_alcanzaron, procesado)
 
 
-def total_importe_vendedor(matriz_vendedores, posicion):
-    return sum(matriz_vendedores[posicion])
+def promedio_mensual(valores, meses_registrados):
+    """Suma de los valores de los meses procesados / cantidad de meses procesados.
+    - Empresa: valores = totales_por_mes(matriz_vendedores, meses_registrados).
+    - Vendedor: valores = su propia fila de la matriz de vendedores.
+    Devuelve None si todavía no hay meses procesados."""
+    procesados = [valor for valor, registrado in zip(valores, meses_registrados) if registrado]
+    return sum(procesados) / meses_registrados.count(True) if True in meses_registrados else None
+
+
+def proyeccion_anual(valores, meses_registrados):
+    """Estimación matemática: promedio mensual * 12."""
+    promedio = promedio_mensual(valores, meses_registrados)
+    return None if promedio is None else promedio * 12
 
 
 def comision_vendedor(matriz_vendedores, vendedores_comision, posicion):
-    return total_importe_vendedor(matriz_vendedores, posicion) * vendedores_comision[posicion]
-
-
-def proyeccion_vendedor(matriz_vendedores, posicion, meses_registrados):
-    cantidad_meses = sum(meses_registrados)
-    if cantidad_meses == 0:
-        return None
-    promedio = sum(matriz_vendedores[posicion][i] for i in range(len(meses_registrados))
-                   if meses_registrados[i]) / cantidad_meses
-    return promedio * 12
+    return sum(matriz_vendedores[posicion]) * vendedores_comision[posicion]

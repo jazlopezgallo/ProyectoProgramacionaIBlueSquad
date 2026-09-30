@@ -1,14 +1,23 @@
 import datos
-import operaciones as operaciones
+import operaciones
+
+
+# ---------------------------------------------------------------------------
+# PRESENTACIÓN Y ENTRADA DE DATOS
+# ---------------------------------------------------------------------------
+
+def color(mensaje, codigo):
+    print(f"\033[{codigo}m{mensaje}\033[0m")
 
 def color_error(mensaje):
-    print(f"\033[31m{mensaje}\033[0m")
+    color(mensaje, 31)
 
-def color_exito(mensaje):
-    print(f"\033[32m{mensaje}\033[0m")
+def mostrar_resultado(resultado):
+    """Recibe la tupla (ok, mensaje) que devuelven las operaciones."""
+    color(resultado[1], 32 if resultado[0] else 31)
 
-def color_info(mensaje):
-    print(f"\033[34m{mensaje}\033[0m")
+def pesos(valor):
+    return f"${valor:.2f}"
 
 def pedir_entero(mensaje):
     texto = input(mensaje)
@@ -18,243 +27,201 @@ def pedir_entero(mensaje):
     return int(texto)
 
 def pedir_texto(mensaje):
-    texto = input(mensaje).strip()
+    texto = input(mensaje)
     while not operaciones.texto_valido(texto)[0]:
         color_error("Error: el dato no puede estar vacío.")
-        texto = input(mensaje).strip()
+        texto = input(mensaje)
     return texto
 
-def mostrar_menu(titulo, opciones):
-    color_info(f"\n--- {titulo} ---")
+def pedir_mes(meses, meses_registrados, mensaje):
+    for i, mes in enumerate(meses, 1):
+        print(f"{i}. {mes} ({'procesado' if meses_registrados[i - 1] else 'sin información'})")
+    return pedir_entero(mensaje)
+
+def elegir_opcion(titulo, opciones):
+    color(f"\n--- {titulo} ---", 34)
     for i, opcion in enumerate(opciones, 1):
         print(f"{i}. {opcion}")
+    return input("Seleccione una opción: ").strip()
 
-def mostrar_meses(meses):
-    for i, mes in enumerate(meses, 1):
-        print(f"{i}. {mes}")
+def mostrar_maximos(titulo, maximo, es_importe):
+    """Muestra el resultado de operaciones.maximos: (nombres empatados, total)."""
+    nombres, total = maximo
+    detalle = pesos(total) if es_importe else f"{total} unidades"
+    print(f"{titulo}: {', '.join(nombres)} ({detalle})" if nombres else "Todavía no hay datos registrados.")
 
-def mostrar_matriz(titulo, nombres, matriz):
-    print(f"\n{titulo}")
-    for i, nombre in enumerate(nombres):
-        print(f"{nombre}: {matriz[i]}")
+def mostrar_ranking(ranking):
+    for i, (nombre, total) in enumerate(ranking, 1):
+        print(f"{i}. {nombre} -> {pesos(total)}")
 
-def gestionar_vendedores(ids, nombres, comisiones, matriz):
-    print("\n1. Agregar\n2. Eliminar\n3. Buscar")
-    opcion = input("Seleccione una opción: ").strip()
+
+# ---------------------------------------------------------------------------
+# MENÚS
+# ---------------------------------------------------------------------------
+
+def gestionar(ids, nombres, valores, matriz, entidad):
+    """Agregar / Eliminar / Buscar, común a vendedores (valores = comisiones) y productos (valores = precios)."""
+    es_vendedor = entidad == "vendedor"
+    opcion = elegir_opcion(f"GESTIÓN DE {'VENDEDORES' if es_vendedor else 'PRODUCTOS'}", ["Agregar", "Eliminar", "Buscar"])
     if opcion == "1":
         codigo = pedir_entero("Código: ")
         nombre = pedir_texto("Nombre: ")
-        comision = pedir_entero("Comisión (%): ")
-        ids, nombres, comisiones, matriz, ok, mensaje = operaciones.agregar_vendedor(
-            ids, nombres, comisiones, matriz, codigo, nombre, comision)
-        color_exito(mensaje) if ok else color_error(mensaje)
+        agregar = operaciones.agregar_vendedor if es_vendedor else operaciones.agregar_producto
+        valor = pedir_entero("Comisión (%): " if es_vendedor else "Precio unitario: ")
+        mostrar_resultado(agregar(ids, nombres, valores, matriz, codigo, nombre, valor))
     elif opcion == "2":
         codigo = pedir_entero("Código a eliminar: ")
-        ids, nombres, comisiones, matriz, ok, mensaje = operaciones.eliminar_vendedor(
-            ids, nombres, comisiones, matriz, codigo)
-        color_exito(mensaje) if ok else color_error(mensaje)
+        mostrar_resultado(operaciones.eliminar_elemento(ids, nombres, valores, matriz, codigo, entidad))
     elif opcion == "3":
-        codigo = pedir_entero("Código a buscar: ")
-        posicion = operaciones.busqueda_secuencial(ids, codigo)
+        posicion = operaciones.busqueda_secuencial(ids, pedir_entero("Código a buscar: "))
         if posicion == -1:
-            color_error("Error: el vendedor no existe.")
+            color_error(f"Error: el {entidad} no existe.")
         else:
-            print(f"Código: {ids[posicion]}")
-            print(f"Nombre: {nombres[posicion]}")
-            print(f"Comisión: {comisiones[posicion] * 100:.0f}%")
+            print(f"Código: {ids[posicion]}\nNombre: {nombres[posicion]}")
+            print(f"Comisión: {valores[posicion] * 100:.0f}%" if es_vendedor else f"Precio: {pesos(valores[posicion])}")
     else:
         color_error("Opción inválida.")
-    return ids, nombres, comisiones, matriz
-
-def gestionar_productos(ids, nombres, precios, matriz):
-    print("\n1. Agregar\n2. Eliminar\n3. Buscar")
-    opcion = input("Seleccione una opción: ").strip()
-    if opcion == "1":
-        codigo = pedir_entero("Código: ")
-        nombre = pedir_texto("Nombre: ")
-        precio = pedir_entero("Precio unitario: ")
-        ids, nombres, precios, matriz, ok, mensaje = operaciones.agregar_producto(
-            ids, nombres, precios, matriz, codigo, nombre, precio)
-        color_exito(mensaje) if ok else color_error(mensaje)
-    elif opcion == "2":
-        codigo = pedir_entero("Código a eliminar: ")
-        ids, nombres, precios, matriz, ok, mensaje = operaciones.eliminar_producto(
-            ids, nombres, precios, matriz, codigo)
-        color_exito(mensaje) if ok else color_error(mensaje)
-    elif opcion == "3":
-        codigo = pedir_entero("Código a buscar: ")
-        posicion = operaciones.busqueda_secuencial(ids, codigo)
-        if posicion == -1:
-            color_error("Error: el producto no existe.")
-        else:
-            print(f"Código: {ids[posicion]}")
-            print(f"Nombre: {nombres[posicion]}")
-            print(f"Precio: ${precios[posicion]:.2f}")
-    else:
-        color_error("Opción inválida.")
-    return ids, nombres, precios, matriz
 
 def registrar_venta_menu(vendedores_id, productos_id, precios, matriz_vendedores,
                          matriz_productos, meses_registrados, meses, codigo_fijo=None):
     codigo_vendedor = codigo_fijo if codigo_fijo is not None else pedir_entero("Código de vendedor: ")
     codigo_producto = pedir_entero("Código de producto: ")
-    mostrar_meses(meses)
-    mes = pedir_entero("Mes (1-12): ")
+    mes = pedir_mes(meses, meses_registrados, "Mes (1-12): ")
     cantidad = pedir_entero("Cantidad de unidades: ")
-
-    matriz_vendedores, matriz_productos, meses_registrados, ok, mensaje = operaciones.registrar_venta(
+    mostrar_resultado(operaciones.registrar_venta(
         vendedores_id, productos_id, precios, matriz_vendedores, matriz_productos,
-        meses_registrados, codigo_vendedor, codigo_producto, mes, cantidad)
+        meses_registrados, codigo_vendedor, codigo_producto, mes, cantidad))
 
-    color_exito(mensaje) if ok else color_error(mensaje)
-    return matriz_vendedores, matriz_productos, meses_registrados
 
 def menu_administrador(vendedores_id, vendedores_nombre, vendedores_comision,
-                        productos_id, productos_nombre, productos_precio,
-                        matriz_vendedores, matriz_productos, meses_registrados,
-                        meses, objetivo_mensual):
+                       productos_id, productos_nombre, productos_precio,
+                       matriz_vendedores, matriz_productos, meses_registrados,
+                       meses, objetivo_mensual):
     opciones = [
         "Gestionar vendedores (Agregar / Eliminar / Buscar)",
         "Gestionar productos (Agregar / Eliminar / Buscar)",
         "Registrar venta",
-        "Consultar matriz de productos",
-        "Consultar matriz de vendedores",
-        "Producto más vendido",
-        "Vendedor con mayor volumen de ventas",
-        "Mes con mayor cantidad de unidades",
-        "Ranking de vendedores / Top 3",
-        "Cumplimiento de objetivo por mes",
+        "Marcar mes como procesado (mes sin ventas)",
+        "Producto más vendido (unidades vendidas)",
+        "Vendedor con mayor importe vendido",
+        "Ranking de vendedores por importe vendido / Top 3",
+        "Cumplimiento de objetivo mensual",
+        "Promedio mensual y proyección anual de la empresa",
         "Volver"
     ]
+    opcion_salir = str(len(opciones))
+    opcion = ""
 
-    while True:
-        mostrar_menu("ADMINISTRADOR", opciones)
-        opcion = input("Seleccione una opción: ").strip()
+    while opcion != opcion_salir:
+        opcion = elegir_opcion("ADMINISTRADOR", opciones)
 
         if opcion == "1":
-            vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores = gestionar_vendedores(
-                vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores)
+            gestionar(vendedores_id, vendedores_nombre, vendedores_comision, matriz_vendedores, "vendedor")
         elif opcion == "2":
-            productos_id, productos_nombre, productos_precio, matriz_productos = gestionar_productos(
-                productos_id, productos_nombre, productos_precio, matriz_productos)
+            gestionar(productos_id, productos_nombre, productos_precio, matriz_productos, "producto")
         elif opcion == "3":
-            matriz_vendedores, matriz_productos, meses_registrados = registrar_venta_menu(
-                vendedores_id, productos_id, productos_precio, matriz_vendedores,
-                matriz_productos, meses_registrados, meses)
+            registrar_venta_menu(vendedores_id, productos_id, productos_precio, matriz_vendedores,
+                                 matriz_productos, meses_registrados, meses)
         elif opcion == "4":
-            mostrar_matriz("MATRIZ DE PRODUCTOS - UNIDADES POR MES", productos_nombre, matriz_productos)
+            mes = pedir_mes(meses, meses_registrados, "Mes a marcar como procesado (1-12): ")
+            mostrar_resultado(operaciones.procesar_mes(meses_registrados, meses, mes))
         elif opcion == "5":
-            mostrar_matriz("MATRIZ DE VENDEDORES - IMPORTE POR MES", vendedores_nombre, matriz_vendedores)
+            mostrar_maximos("Producto/s más vendido/s",
+                            operaciones.mayor_total(productos_nombre, matriz_productos), False)
         elif opcion == "6":
-            nombres, total = operaciones.producto_mas_vendido(productos_nombre, matriz_productos)
-            print("No hay ventas registradas." if not nombres else
-                  f"Producto/s más vendido/s: {', '.join(nombres)} ({total} unidades)")
+            mostrar_maximos("Vendedor/es con mayor importe vendido",
+                            operaciones.mayor_total(vendedores_nombre, matriz_vendedores), True)
         elif opcion == "7":
-            nombres, total = operaciones.vendedor_mayor_volumen(vendedores_nombre, matriz_vendedores)
-            print("No hay ventas registradas." if not nombres else
-                  f"Vendedor/es con mayor volumen: {', '.join(nombres)} (${total:.2f})")
-        elif opcion == "8":
-            meses_max, total = operaciones.mes_mayor_unidades(
-                matriz_productos, meses_registrados, meses)
-            print("Todavía no hay meses registrados." if not meses_max else
-                  f"Mes/es con mayor cantidad de unidades: {', '.join(meses_max)} ({total} unidades)")
-        elif opcion == "9":
             ranking = operaciones.ranking_vendedores(vendedores_nombre, matriz_vendedores)
-            for i, (nombre, total) in enumerate(ranking, 1):
-                print(f"{i}. {nombre} -> ${total:.2f}")
+            mostrar_ranking(ranking)
             print("\nTop 3:")
-            for i, (nombre, total) in enumerate(operaciones.top_vendedores(ranking, 3), 1):
-                print(f"{i}. {nombre} -> ${total:.2f}")
-        elif opcion == "10":
-            mostrar_meses(meses)
-            mes = pedir_entero("Mes a evaluar: ")
-            alcanzaron, no_alcanzaron, registrado = operaciones.cumplimiento_objetivo_mes(
+            mostrar_ranking(operaciones.top_vendedores(ranking, 3))
+        elif opcion == "8":
+            mes = pedir_mes(meses, meses_registrados, "Mes a evaluar: ")
+            alcanzaron, no_alcanzaron, procesado = operaciones.cumplimiento_objetivo_mes(
                 vendedores_nombre, matriz_vendedores, mes, objetivo_mensual, meses_registrados)
-            if not registrado:
-                color_error("El mes seleccionado todavía no está registrado.")
+            if not procesado:
+                color_error("El mes seleccionado no es válido o todavía no fue procesado.")
             else:
-                print(f"Objetivo: ${objetivo_mensual:.2f}")
+                print(f"Objetivo de importe mensual vendido: {pesos(objetivo_mensual)}")
                 print("Alcanzaron:", ", ".join(alcanzaron) if alcanzaron else "-")
                 print("No alcanzaron:", ", ".join(no_alcanzaron) if no_alcanzaron else "-")
-        elif opcion == "11":
-            return (vendedores_id, vendedores_nombre, vendedores_comision,
-                    productos_id, productos_nombre, productos_precio,
-                    matriz_vendedores, matriz_productos, meses_registrados)
+        elif opcion == "9":
+            totales =operaciones.totales_por_mes(matriz_vendedores, meses_registrados)
+            promedio = operaciones.promedio_mensual(totales, meses_registrados)
+            if promedio is None:
+                color_error("Todavía no hay meses procesados.")
+            else:
+                print(f"Meses procesados: {meses_registrados.count(True)}")
+                print(f"Promedio mensual de la empresa: {pesos(promedio)}")
+                print(f"Proyección anual estimada de la empresa: {pesos(operaciones.proyeccion_anual(totales, meses_registrados))}")
+        elif opcion == opcion_salir:
+            print("Volviendo al menú principal...")
         else:
             color_error("Opción inválida.")
+
 
 def menu_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
                   productos_id, productos_precio, matriz_vendedores,
                   matriz_productos, meses_registrados, meses):
     codigo_vendedor = pedir_entero("Ingrese su código de vendedor: ")
     posicion = operaciones.busqueda_secuencial(vendedores_id, codigo_vendedor)
-
-    if posicion == -1:
-        color_error("El código de vendedor no existe.")
-        return matriz_vendedores, matriz_productos, meses_registrados
-
     opciones = [
         "Registrar venta",
         "Consultar mi importe total vendido",
         "Consultar mi comisión",
-        "Consultar mi proyección estimada",
+        "Consultar mi proyección anual estimada",
         "Volver"
     ]
+    opcion_salir = str(len(opciones))
+    # Si el código no existe, el ciclo no se ejecuta
+    opcion = opcion_salir if posicion == -1 else ""
+    if posicion == -1:
+        color_error("El código de vendedor no existe.")
 
-    while True:
-        mostrar_menu(f"VENDEDOR: {vendedores_nombre[posicion]}", opciones)
-        opcion = input("Seleccione una opción: ").strip()
+    while opcion != opcion_salir:
+        opcion = elegir_opcion(f"VENDEDOR: {vendedores_nombre[posicion]}", opciones)
 
         if opcion == "1":
-            matriz_vendedores, matriz_productos, meses_registrados = registrar_venta_menu(
-                vendedores_id, productos_id, productos_precio, matriz_vendedores,
-                matriz_productos, meses_registrados, meses, codigo_vendedor)
+            registrar_venta_menu(vendedores_id, productos_id, productos_precio, matriz_vendedores,
+                                 matriz_productos, meses_registrados, meses, codigo_vendedor)
         elif opcion == "2":
-            total = operaciones.total_importe_vendedor(matriz_vendedores, posicion)
-            print(f"Mi importe total vendido: ${total:.2f}")
+            print(f"Mi importe total vendido: {pesos(sum(matriz_vendedores[posicion]))}")
         elif opcion == "3":
-            comision = operaciones.comision_vendedor(
-                matriz_vendedores, vendedores_comision, posicion)
-            print(f"Mi comisión: ${comision:.2f}")
+            print(f"Mi comisión: {pesos(operaciones.comision_vendedor(matriz_vendedores, vendedores_comision, posicion))}")
         elif opcion == "4":
-            proyeccion = operaciones.proyeccion_vendedor(
-                matriz_vendedores, posicion, meses_registrados)
-            print("Todavía no hay meses registrados." if proyeccion is None else
-                  f"Mi proyección estimada anual: ${proyeccion:.2f}")
-        elif opcion == "5":
-            return matriz_vendedores, matriz_productos, meses_registrados
+            proyeccion = operaciones.proyeccion_anual(matriz_vendedores[posicion], meses_registrados)
+            print("Todavía no hay meses procesados." if proyeccion is None else
+                  f"Mi proyección anual estimada (según mi propio promedio mensual): {pesos(proyeccion)}")
+        elif opcion == opcion_salir:
+            print("Volviendo al menú principal...")
         else:
             color_error("Opción inválida.")
+
 
 def main():
     (matriz_vendedores, matriz_productos, productos_precio, vendedores_nombre,
      productos_nombre, meses, vendedores_id, vendedores_comision,
-     objetivo_mensual, productos_id) = datos.creaciondatos()
+     objetivo_mensual, productos_id, meses_registrados) = datos.creaciondatos()
 
-    meses_registrados = [False] * len(meses)
-
-    while True:
-        mostrar_menu("BLUE SQUAD SALESMATRIX", ["Administrador", "Vendedor", "Salir"])
-        opcion = input("Seleccione una opción: ").strip()
+    opcion = ""
+    while opcion != "3":
+        opcion = elegir_opcion("BLUE SQUAD SALESMATRIX", ["Administrador", "Vendedor", "Salir"])
 
         if opcion == "1":
-            (vendedores_id, vendedores_nombre, vendedores_comision,
-             productos_id, productos_nombre, productos_precio,
-             matriz_vendedores, matriz_productos, meses_registrados) = menu_administrador(
-                vendedores_id, vendedores_nombre, vendedores_comision,
-                productos_id, productos_nombre, productos_precio,
-                matriz_vendedores, matriz_productos, meses_registrados,
-                meses, objetivo_mensual)
+            menu_administrador(vendedores_id, vendedores_nombre, vendedores_comision,
+                               productos_id, productos_nombre, productos_precio,
+                               matriz_vendedores, matriz_productos, meses_registrados,
+                               meses, objetivo_mensual)
         elif opcion == "2":
-            matriz_vendedores, matriz_productos, meses_registrados = menu_vendedor(
-                vendedores_id, vendedores_nombre, vendedores_comision,
-                productos_id, productos_precio, matriz_vendedores,
-                matriz_productos, meses_registrados, meses)
+            menu_vendedor(vendedores_id, vendedores_nombre, vendedores_comision,
+                          productos_id, productos_precio, matriz_vendedores,
+                          matriz_productos, meses_registrados, meses)
         elif opcion == "3":
             print("Sistema finalizado.")
-            break
         else:
             color_error("Opción inválida.")
+
 
 if __name__ == "__main__":
     main()

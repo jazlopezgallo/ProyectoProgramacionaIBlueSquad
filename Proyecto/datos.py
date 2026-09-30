@@ -9,4 +9,6 @@ def creaciondatos():
     precios = [10000, 23333, 12000]
     matriz_vendedores = [[0 for c in meses] for f in range(len(vendedores))]
     matriz_productos = [[0 for c in meses] for f in range(len(productos))]
-    return matriz_vendedores, matriz_productos, precios, vendedores, productos, meses, vendedores_id_inicial, vendedores_comision_inicial, objetivo_mensual, productos_id_inicial
+    # False = mes sin información (no procesado); True = mes procesado (aunque tenga 0 ventas)
+    meses_registrados = [False for c in meses]
+    return matriz_vendedores, matriz_productos, precios, vendedores, productos, meses, vendedores_id_inicial, vendedores_comision_inicial, objetivo_mensual, productos_id_inicial, meses_registrados
