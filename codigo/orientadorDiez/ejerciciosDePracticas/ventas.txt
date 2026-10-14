@@ -1,0 +1,6 @@
+P101;Teclado;3;25000
+P102;Mouse;5;12000
+P103;Monitor;2;180000
+P101;Teclado;4;25000
+P104;Auriculares;6;30000
+P102;Mouse;2;12000

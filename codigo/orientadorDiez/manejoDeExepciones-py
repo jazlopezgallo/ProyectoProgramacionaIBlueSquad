@@ -1,0 +1,15 @@
+#Ejemplo de manejo de excepciones
+try:
+    cantidad = int(campos[2])
+except ValueError:
+    print("La cantidad no es numerica")
+else:
+    print("Cantidad:", cantidad)
+
+# Ejemplo con witch
+try:
+    with open("productos.csv", mode="rt") as arch:
+        for linea in arch:
+            print(linea.rstrip("\n"))
+except OSError:
+    print("No se pudo acceder al archivo")

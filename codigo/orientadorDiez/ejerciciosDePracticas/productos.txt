@@ -1,0 +1,5 @@
+101;Cuaderno;2500
+102;Lapicera;1200
+103;Mochila;35000
+104;Regla;1800
+105;Calculadora;28000

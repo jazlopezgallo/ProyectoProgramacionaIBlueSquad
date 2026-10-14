@@ -18,7 +18,7 @@
 
 Este repositorio contiene los ejercicios y actividades prácticas realizados
 por el grupo BlueSquad durante la materia Programación I. El portfolio se
-completará progresivamente con los trabajos de los orientadores 1, 2, 3, 4 y 5.
+completará progresivamente con los trabajos de los distintos orientadores.
 
 Los ejercicios están desarrollados principalmente en Python y se organizan por
 orientador para facilitar la lectura, la ejecución y la revisión de cada
@@ -88,6 +88,15 @@ La segmentación de actividades incluye:
 
 **Ubicación:** [`codigo/orientadorCinco`](codigo/orientadorCinco)
 
+### Orientador 10
+
+Esta sección trabaja con archivos de texto: apertura y cierre, lectura
+secuencial, separacion de registros, validacion de datos y generacion de
+informes. Incluye diez ejercicios de practica y un desafio aplicado al Proyecto
+Integrador para administrar entregas de grupos en `entregas.csv`.
+
+**Ubicación:** [`codigo/orientadorDiez`](codigo/orientadorDiez)
+
 ## Estructura esperada
 
 A medida que se incorporen los trabajos faltantes, el repositorio tendrá una
@@ -99,7 +108,8 @@ codigo/
 ├── orientadorDos/
 ├── orientadorTres/
 ├── orientadorCuatro/
-└── orientadorCinco/
+├── orientadorCinco/
+└── orientadorDiez/
 ```
 
 Cada carpeta puede incluir los archivos `.py`, los casos de prueba y un README

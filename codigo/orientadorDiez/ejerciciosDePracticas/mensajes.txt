@@ -1,0 +1,5 @@
+Hola
+Archivos en Python
+Una linea representa un registro
+Programar requiere practicar
+Fin del archivo

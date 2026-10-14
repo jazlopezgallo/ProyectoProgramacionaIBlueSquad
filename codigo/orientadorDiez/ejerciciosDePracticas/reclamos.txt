@@ -1,0 +1,8 @@
+R001;Internet;demora
+R002;Facturacion;importe incorrecto
+R003;Internet;sin servicio
+R004;Soporte;no responde
+R005;Internet;intermitencia
+R006;Facturacion;duplicado
+R007;Soporte;configuracion
+R008;Internet;baja velocidad

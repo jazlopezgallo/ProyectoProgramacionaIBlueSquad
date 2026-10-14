@@ -1,0 +1,6 @@
+10001;Ana Gomez
+9840;Luis Diaz
+12000;Maria Lopez
+11050;Tomas Perez
+9999;Sofia Ruiz
+13210;Juan Costa

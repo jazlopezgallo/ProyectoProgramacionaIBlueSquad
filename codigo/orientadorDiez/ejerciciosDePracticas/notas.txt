@@ -1,0 +1,6 @@
+1001;Ana;8
+1002;Bruno;5
+1003;Carla;10
+1004;Diego;6
+1005;Elena;7
+1006;Facundo;3

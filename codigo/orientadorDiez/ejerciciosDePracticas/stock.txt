@@ -1,0 +1,7 @@
+A10;Teclado;15
+A11;Mouse;20
+A12;Monitor;8
+LINEA_INCORRECTA
+A13;Auriculares;doce
+A14;Webcam;7
+A15;Microfono;5

@@ -1,0 +1,44 @@
+def crear_alumnos():
+    try:
+        arch = open("alumnos.txt", mode="wt")
+    except OSError:
+        print("No se pudo crear el archivo alumnos.txt")
+    else:
+        legajo_texto = input("Ingrese el legajo (-1 para terminar): ")
+
+        while legajo_texto != "-1":
+            try:
+                legajo = int(legajo_texto)
+            except ValueError:
+                print("El legajo debe ser numerico")
+            else:
+                if legajo <= 0:
+                    print("El legajo debe ser positivo")
+                else:
+                    nombre = input("Ingrese el nombre: ").strip()
+                    apellido = input("Ingrese el apellido: ").strip()
+                    comision_texto = input("Ingrese la comision (1 a 10): ")
+
+                    if nombre == "" or apellido == "":
+                        print("El nombre y el apellido no pueden estar vacios")
+                    else:
+                        try:
+                            comision = int(comision_texto)
+                        except ValueError:
+                            print("La comision debe ser numerica")
+                        else:
+                            if comision < 1 or comision > 10:
+                                print("La comision debe estar entre 1 y 10")
+                            else:
+                                arch.write(
+                                    str(legajo) + ";" + nombre + ";" +
+                                    apellido + ";" + str(comision) + "\n"
+                                )
+
+            legajo_texto = input("Ingrese el legajo (-1 para terminar): ")
+
+        arch.close()
+        print("Los alumnos se guardaron en alumnos.txt")
+
+
+crear_alumnos()
